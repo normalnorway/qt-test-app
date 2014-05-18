@@ -1,9 +1,11 @@
-CONFIG += debug
 QMAKE_CXX = g++-4.8
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS_DEBUG -= -g
 
-QT	+= core network xml
+CONFIG += debug
+CONFIG += mobility
+
+QT += core network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,3 +16,5 @@ SOURCES += main.cc	\
 	   myobject.cc
 
 HEADERS += myobject.h
+
+RESOURCES = resources.qrc

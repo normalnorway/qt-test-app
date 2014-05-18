@@ -1,9 +1,13 @@
 *.o
 *~
 tags
+.clang_complete
 
-# Qt files
+# Qt generated files
 Makefile
-moc_*
+qrc_*.h
+qrc_*.cpp
+moc_*.h
+moc_*.hpp
 #ui_mainwindow.h ?
 #*.autosave

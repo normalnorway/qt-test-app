@@ -11,7 +11,7 @@ class MyObject : public QObject
 
   public:
     MyObject (QObject *parent = 0);
-    ~MyObject();   
+    ~MyObject();
 
   public slots:
     void replyFinished (QNetworkReply*);

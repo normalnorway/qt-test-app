@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
 //    QCoreApplication app (argc, argv);
     QApplication app (argc, argv);
 
-    QFile file ("rss.xml");
+    //QFile file ("rss.xml");
+    QFile file (":/resources/rss.xml");
     if (not file.open (QIODevice::ReadOnly)) return 0;
     QList<RssEntry> rss_entries = parse_rss (file);
 
