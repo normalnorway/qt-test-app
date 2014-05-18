@@ -1,6 +1,9 @@
-QMAKE_CXX = g++-4.8
-QMAKE_CXXFLAGS += -std=c++11
-QMAKE_CXXFLAGS_DEBUG -= -g
+# will fuck up android build
+#linux {
+#    QMAKE_CXX = g++-4.8
+#    QMAKE_CXXFLAGS += -std=c++11
+#    QMAKE_CXXFLAGS_DEBUG -= -g
+#}
 
 CONFIG += debug
 CONFIG += mobility
@@ -18,3 +21,10 @@ SOURCES += main.cc	\
 HEADERS += myobject.h
 
 RESOURCES = resources.qrc
+
+
+## Android build
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+OTHER_FILES += \
+    android/AndroidManifest.xml

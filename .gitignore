@@ -8,6 +8,11 @@ Makefile
 qrc_*.h
 qrc_*.cpp
 moc_*.h
-moc_*.hpp
+moc_*.cpp
 #ui_mainwindow.h ?
 #*.autosave
+
+# Android
+Makefile.android
+*-deployment-settings.json
+*.so
