@@ -1,0 +1,21 @@
+If you use qmake to build your projects, Qt GUI is included by default.
+To disable Qt GUI, add the following line to your .pro file:
+QT -= gui
+
+QMAKE_CXXFLAGS_RELEASE -= -O2
+QMAKE_CXXFLAGS_RELEASE += -Os
+
+Identify all the resources used by your application and add them to one
+or more qrc files. Qt Creator updates your qmake project file with the
+"RESOURCES" variable listing the qrc files you added.
+
+win32 {
+
+}
+
+unix {
+
+}
+
+CONFIG += no_keywords
+// must use Q_FOREACH instead of foreach

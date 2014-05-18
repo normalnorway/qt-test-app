@@ -1,2 +1,9 @@
+*.o
 *~
-*.autosave
+tags
+
+# Qt files
+Makefile
+moc_*
+#ui_mainwindow.h ?
+#*.autosave

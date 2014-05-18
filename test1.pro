@@ -1,27 +1,16 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2014-05-13T23:57:28
-#
-#-------------------------------------------------
-
-# Added by torkel
+CONFIG += debug
+QMAKE_CXX = g++-4.8
 QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS_DEBUG -= -g
 
-QT       += core network gui
+QT	+= core network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = test1
 TEMPLATE = app
 
+SOURCES += main.cc	\
+	   myobject.cc
 
-SOURCES += main.cc\
-        mainwindow.cpp
-
-HEADERS  += mainwindow.h
-
-FORMS    += mainwindow.ui
-
-CONFIG += mobility
-MOBILITY = 
-
+HEADERS += myobject.h
