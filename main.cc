@@ -62,8 +62,8 @@ int main(int argc, char *argv[])
     foreach (const RssEntry &e, rss_entries)
     {
         QLabel *title = new QLabel;
-        //title->setText (e.title);
-        title->setText (QString("<a href='%1'><span style='text-decoration: none;'>%2</span></a>").arg(e.link.toString()).arg(e.title));
+        title->setText (e.title);
+//        title->setText (QString("<a href='%1'><span style='text-decoration: none;'>%2</span></a>").arg(e.link.toString()).arg(e.title));
 //        title->setText (QString("<a href='%1'>%2</a>").arg(e.link.toString()).arg(e.title));
         title->setOpenExternalLinks (true);
         title->setFont (font1);
@@ -95,9 +95,18 @@ int main(int argc, char *argv[])
     QScrollArea *scroll = new QScrollArea;
     scroll->setWidget (vbox);
 //    scroll->resize (500, 800);
+//    scroll->grabGesture (Qt::PanGesture);
 
-//    QMainWindow win;
     MainWindow win;
+
+    // trying to get gestures to work ...
+    win.setAttribute (Qt::WA_AcceptTouchEvents);
+    win.setAttribute (Qt::WA_TouchPadAcceptSingleTouchEvents);
+    win.setAttribute (Qt::WA_WState_AcceptedTouchBeginEvent);
+    win.setAttribute (Qt::WA_MouseTracking);
+    win.grabGesture (Qt::PanGesture);
+    win.grabGesture (Qt::SwipeGesture);
+
     win.resize (400, 800);
     win.setCentralWidget (scroll);
     win.show();

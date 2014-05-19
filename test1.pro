@@ -1,16 +1,14 @@
-# Q: how to check for non-android build?
 !android_app {
-  message ("not android")
+    message ("not android")
+    QMAKE_CXX = g++-4.8
+    QMAKE_CXXFLAGS_DEBUG -= -g
 }
 # Q: can pass from command line / environment?
 #linux {
-#    QMAKE_CXX = g++-4.8
 #    QMAKE_CXXFLAGS += -std=c++11
-#    QMAKE_CXXFLAGS_DEBUG -= -g
 #}
-# !!!
 
-#CONFIG += c++11
+CONFIG += c++11
 CONFIG += debug
 
 #CONFIG += mobility
