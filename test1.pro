@@ -1,12 +1,20 @@
-# will fuck up android build
+# Q: how to check for non-android build?
+!android_app {
+  message ("not android")
+}
+# Q: can pass from command line / environment?
 #linux {
 #    QMAKE_CXX = g++-4.8
 #    QMAKE_CXXFLAGS += -std=c++11
 #    QMAKE_CXXFLAGS_DEBUG -= -g
 #}
+# !!!
 
+#CONFIG += c++11
 CONFIG += debug
-CONFIG += mobility
+
+#CONFIG += mobility
+#MOBILITY += systeminfo
 
 QT += core network xml
 
@@ -16,9 +24,11 @@ TARGET = test1
 TEMPLATE = app
 
 SOURCES += main.cc	\
-	   myobject.cc
+	   myobject.cc	\
+	   mainwindow.cc
 
-HEADERS += myobject.h
+HEADERS += myobject.h	\
+	   mainwindow.h
 
 RESOURCES = resources.qrc
 

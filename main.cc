@@ -1,12 +1,12 @@
 //#include "myobject.h"
+#include "mainwindow.h"
 
-//#include <QCoreApplication>
 #include <QApplication>
-#include <QMainWindow>
 #include <QBoxLayout>
 #include <QLabel>
 #include <QFont>
 #include <QScrollArea>
+#include <QDesktopWidget>
 
 #include <QtDebug>
 #include <QString>
@@ -43,25 +43,22 @@ QList<RssEntry> parse_rss (QFile &file);
 
 int main(int argc, char *argv[])
 {
-//    QCoreApplication app (argc, argv);
     QApplication app (argc, argv);
+
+//    QDesktopWidget *desk = QApplication::desktop();
+//    qDebug() << desk->screenCount() << desk->screenGeometry() << desk->availableGeometry();
+//    return 0;
 
     //QFile file ("rss.xml");
     QFile file (":/resources/rss.xml");
     if (not file.open (QIODevice::ReadOnly)) return 0;
     QList<RssEntry> rss_entries = parse_rss (file);
 
-//    foreach (const RssEntry &e, rss_entries)
-//        qDebug() << e.title;
-//    return 0;
-
-    QFont font1 ("sans", 12, QFont::Bold);
-    QFont font2 ("sans", 10, -1, true);
-
-    QMainWindow win;
-    QBoxLayout *layout = new QVBoxLayout;
 
     // Pack into layout
+    QBoxLayout *layout = new QVBoxLayout;
+    QFont font1 ("sans", 12, QFont::Bold);
+    QFont font2 ("sans", 10, -1, true);
     foreach (const RssEntry &e, rss_entries)
     {
         QLabel *title = new QLabel;
@@ -99,11 +96,8 @@ int main(int argc, char *argv[])
     scroll->setWidget (vbox);
 //    scroll->resize (500, 800);
 
-    //win.resize (400, 800);
-    //vbox->setMaximumSize (400, 800);
-//    win.setSizePolicy (QSizePolicy::Ignored, QSizePolicy::Fixed);
-//    win.setMaximumSize (400, 800);
-
+//    QMainWindow win;
+    MainWindow win;
     win.resize (400, 800);
     win.setCentralWidget (scroll);
     win.show();
@@ -131,7 +125,7 @@ QList<RssEntry> parse_rss (QFile &file)
     QDomNodeList nlist = dom.elementsByTagName ("item");
     QList<RssEntry> rss_entries;
     rss_entries.reserve (nlist.length());
-    for (int i=0; i<nlist.length(); ++i)
+    for (int i=0; i<nlist.length(); ++i)    // rename nlist -> L ?
     {
         QDomNode node, item = nlist.item(i);
         QDomText text;
