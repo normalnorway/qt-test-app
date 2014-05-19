@@ -1,3 +1,7 @@
+/*
+QString location = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+*/
+
 //#include "myobject.h"
 #include "mainwindow.h"
 
@@ -7,6 +11,7 @@
 #include <QFont>
 #include <QScrollArea>
 #include <QDesktopWidget>
+#include <QPushButton>
 
 #include <QtDebug>
 #include <QString>
@@ -14,7 +19,9 @@
 #include <QUrl>
 #include <QDateTime>
 #include <QList>
-//#include <QTextStream>
+#include <QTextStream>
+
+#include <QtGlobal>
 
 //#include <QNetworkAccessManager>
 //#include <QNetworkRequest>
@@ -41,9 +48,35 @@ struct RssEntry
 QList<RssEntry> parse_rss (QFile &file);
 
 
+void my_message_handler (QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    static QFile logfile ("logfile.txt");
+    static QTextStream stream;
+    if (not logfile.isOpen()) {
+        logfile.open (QIODevice::Append | QIODevice::Text);
+        stream.setDevice (&logfile);
+    }
+
+    const char* level;
+    switch (type) {
+    case QtDebugMsg:    level="Debug";      break;
+    case QtWarningMsg:  level="Warning";    break;
+    case QtCriticalMsg: level="Critical";   break;
+    case QtFatalMsg:    level="Fatal";      break;
+    default:            level="Unknown";
+    }
+    Q_UNUSED (context); // context.file, context.line, context.function
+    // @todo add timestamp
+    stream << QString("%1: %2").arg(level).arg(msg) << "\n";
+    stream.flush();
+}
+
+
 int main(int argc, char *argv[])
 {
+    qInstallMessageHandler (my_message_handler);
     QApplication app (argc, argv);
+    MainWindow win;
 
 //    QDesktopWidget *desk = QApplication::desktop();
 //    qDebug() << desk->screenCount() << desk->screenGeometry() << desk->availableGeometry();
@@ -54,11 +87,45 @@ int main(int argc, char *argv[])
     if (not file.open (QIODevice::ReadOnly)) return 0;
     QList<RssEntry> rss_entries = parse_rss (file);
 
-
-    // Pack into layout
+    /** Layout */
     QBoxLayout *layout = new QVBoxLayout;
     QFont font1 ("sans", 12, QFont::Bold);
     QFont font2 ("sans", 10, -1, true);
+
+    // Header
+    {
+        // resources/logo.png PNG 397x142
+        QPixmap pixmap (":/resources/logo.png");
+        QLabel *l = new QLabel;
+        l->setPixmap (pixmap.scaledToWidth (280, Qt::SmoothTransformation));
+        l->setAlignment (Qt::AlignHCenter);
+        layout->addWidget (l);
+        layout->addSpacing (15);
+    }
+
+    QLabel label ("<h2>Destroy <em>the</em> phone?</h2>");
+    label.setAlignment (Qt::AlignHCenter);
+    layout->addWidget (&label);
+    layout->addSpacing (10);
+
+    QPushButton *btn;
+    btn = new QPushButton ("&Yes");
+    layout->addWidget (btn);
+    btn = new QPushButton ("&No");
+    layout->addWidget (btn);
+    btn = new QPushButton ("&Maybe");
+    layout->addWidget (btn);
+    btn = new QPushButton ("&Show Log");
+    QObject::connect (btn, SIGNAL(clicked(bool)),
+                      &win, SLOT(showLog()));
+    layout->addWidget (btn);
+
+    layout->addSpacing (20);
+    layout->addWidget (new QLabel ("<b>News feed:</b>"));
+    layout->addSpacing (10);
+
+
+    // Rss-section
     foreach (const RssEntry &e, rss_entries)
     {
         QLabel *title = new QLabel;
@@ -97,7 +164,7 @@ int main(int argc, char *argv[])
 //    scroll->resize (500, 800);
 //    scroll->grabGesture (Qt::PanGesture);
 
-    MainWindow win;
+//    MainWindow win;
 
     // trying to get gestures to work ...
     win.setAttribute (Qt::WA_AcceptTouchEvents);

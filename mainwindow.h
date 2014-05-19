@@ -26,6 +26,11 @@ class MainWindow : public QMainWindow
         }
     }
 
+  public slots:
+    void showLog() {
+        qDebug() << "showLog";
+    }
+
   protected:
     virtual bool event (QEvent *ev)
     {

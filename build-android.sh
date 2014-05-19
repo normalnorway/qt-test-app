@@ -20,3 +20,6 @@ $make install INSTALL_ROOT=build/android
 androiddeployqt --debug --input *.json --output build/android/
 
 # --deployment bundled|ministro|debug
+
+# List built packages
+ls -1 build/android/bin/QtApp*.apk
