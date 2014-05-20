@@ -6,12 +6,13 @@ QMAKE=/opt/qt/5.2.1/android_armv7/bin/qmake
 #export PATH=$PATH:/opt/android/jdk/bin
 #export JAVA_HOME=/opt/android/jdk
 
+rm Makefile.android
 if [ ! -e Makefile.android ]; then
     # Q: debug/release build?
     $QMAKE -o Makefile.android
 fi
 
-MAKE=make -f Makefile.android
+make="make -f Makefile.android"
 
 $make clean
 $make

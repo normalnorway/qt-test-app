@@ -1,7 +1,8 @@
+# Note: true even if using qmake-arm. So need other check ...
 !android_app {
-    message ("not android")
-    QMAKE_CXX = g++-4.8
-    QMAKE_CXXFLAGS_DEBUG -= -g
+#    message ("not android")
+#    QMAKE_CXX = g++-4.8
+#    QMAKE_CXXFLAGS_DEBUG -= -g
 }
 # Q: can pass from command line / environment?
 #linux {

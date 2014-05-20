@@ -2,6 +2,11 @@
 QString location = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
 */
 
+#define ANDROID 0
+#if ANDROID != 0
+#  define HAVE_TOUCH
+#endif
+
 //#include "myobject.h"
 #include "mainwindow.h"
 
@@ -13,6 +18,7 @@ QString location = QStandardPaths::writableLocation(QStandardPaths::DesktopLocat
 #include <QDesktopWidget>
 #include <QPushButton>
 
+#include <QtGlobal>
 #include <QtDebug>
 #include <QString>
 #include <QFile>
@@ -21,7 +27,9 @@ QString location = QStandardPaths::writableLocation(QStandardPaths::DesktopLocat
 #include <QList>
 #include <QTextStream>
 
-#include <QtGlobal>
+#include <QScroller>
+//#include <QGesture>
+//#include <QPanGesture>
 
 //#include <QNetworkAccessManager>
 //#include <QNetworkRequest>
@@ -45,36 +53,20 @@ struct RssEntry
 
 
 /** Functions */
-QList<RssEntry> parse_rss (QFile &file);
+QList<RssEntry>     parse_rss               (QFile&);
+
+QScroller*          install_kinetic_scoller (QWidget*);
+
+void                my_message_handler      (QtMsgType,
+                                             const QMessageLogContext&,
+                                             const QString&);
 
 
-void my_message_handler (QtMsgType type, const QMessageLogContext &context, const QString &msg)
-{
-    static QFile logfile ("logfile.txt");
-    static QTextStream stream;
-    if (not logfile.isOpen()) {
-        logfile.open (QIODevice::Append | QIODevice::Text);
-        stream.setDevice (&logfile);
-    }
 
-    const char* level;
-    switch (type) {
-    case QtDebugMsg:    level="Debug";      break;
-    case QtWarningMsg:  level="Warning";    break;
-    case QtCriticalMsg: level="Critical";   break;
-    case QtFatalMsg:    level="Fatal";      break;
-    default:            level="Unknown";
-    }
-    Q_UNUSED (context); // context.file, context.line, context.function
-    // @todo add timestamp
-    stream << QString("%1: %2").arg(level).arg(msg) << "\n";
-    stream.flush();
-}
-
-
+/** Program entry point */
 int main(int argc, char *argv[])
 {
-    qInstallMessageHandler (my_message_handler);
+    //qInstallMessageHandler (my_message_handler);
     QApplication app (argc, argv);
     MainWindow win;
 
@@ -159,27 +151,47 @@ int main(int argc, char *argv[])
     vbox->setLayout (layout);
     vbox->setSizePolicy (QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    QScrollArea *scroll = new QScrollArea;
-    scroll->setWidget (vbox);
-//    scroll->resize (500, 800);
-//    scroll->grabGesture (Qt::PanGesture);
+    QScrollArea *area = new QScrollArea;
+    area->setWidget (vbox);
+//    area->resize (500, 800);
+//    area->grabGesture (Qt::PanGesture);
+
+    // Kinetic scrolling
+    // BUG: screws up scrollbar; so grab gesture on scroll->viewport()?
+#ifdef HAVE_TOUCH
+    QScroller::grabGesture (area);
+    area->setVerticalScrollBarPolicy (Qt::ScrollBarAlwaysOff);
+#else
+    QScroller::grabGesture (area, QScroller::LeftMouseButtonGesture);
+//    QScroller *scroll = QScroller::scroller (area);
+//    qDebug() << scroll->pixelPerMeter();
+#endif
+    // @todo setSnapPositionsY, stop, velocity, scrollTo, ensureVisible
+    // class QFlickGestureRecognizer;
+    // class QMouseFlickGestureRecognizer;
+    // QScrollArea::ensureWidgetVisible
 
 //    MainWindow win;
 
     // trying to get gestures to work ...
-    win.setAttribute (Qt::WA_AcceptTouchEvents);
-    win.setAttribute (Qt::WA_TouchPadAcceptSingleTouchEvents);
-    win.setAttribute (Qt::WA_WState_AcceptedTouchBeginEvent);
-    win.setAttribute (Qt::WA_MouseTracking);
-    win.grabGesture (Qt::PanGesture);
-    win.grabGesture (Qt::SwipeGesture);
+//    win.setAttribute (Qt::WA_AcceptTouchEvents);
+//    win.setAttribute (Qt::WA_TouchPadAcceptSingleTouchEvents);
+//    win.setAttribute (Qt::WA_WState_AcceptedTouchBeginEvent);
+//    win.setAttribute (Qt::WA_MouseTracking);
+//    win.grabGesture (Qt::PanGesture);
 
     win.resize (400, 800);
-    win.setCentralWidget (scroll);
+    win.setCentralWidget (area);
     win.show();
     return app.exec();
 
     /*
+    smallscreen ? win.showMaximized() : win.show();
+#if defined(Q_WS_MAC)
+    mw.raise();
+#endif
+
+
     QNetworkAccessManager manager;
     MyObject obj;
     connect (&manager, SIGNAL(finished(QNetworkReply*)),
@@ -227,4 +239,44 @@ QList<RssEntry> parse_rss (QFile &file)
     }
 
     return rss_entries;
+}
+
+
+
+void my_message_handler (QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    static QFile logfile ("logfile.txt");
+    static QTextStream stream;
+    if (not logfile.isOpen()) {
+        logfile.open (QIODevice::Append | QIODevice::Text);
+        stream.setDevice (&logfile);
+    }
+
+    const char* level;
+    switch (type) {
+    case QtDebugMsg:    level="Debug";      break;
+    case QtWarningMsg:  level="Warning";    break;
+    case QtCriticalMsg: level="Critical";   break;
+    case QtFatalMsg:    level="Fatal";      break;
+    default:            level="Unknown";
+    }
+    Q_UNUSED (context); // context.file, context.line, context.function
+    // @todo add timestamp
+    stream << QString("%1: %2").arg(level).arg(msg) << "\n";
+    stream.flush();
+}
+
+
+
+
+QScroller* install_kinetic_scoller (QWidget *w)
+{
+    QAbstractScrollArea *area = qobject_cast<QAbstractScrollArea *> (w);
+    Q_ASSERT (area);
+#ifdef HAVE_TOUCH
+    QScroller::grabGesture (area->viewport());
+#else
+    QScroller::grabGesture (area->viewport(), QScroller::LeftMouseButtonGesture);
+#endif
+    return QScroller::scroller (w);
 }
