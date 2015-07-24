@@ -1,3 +1,7 @@
+# qmake -query
+# message (QT)	works?
+# qmake VAR=foo ?
+
 # Note: true even if using qmake-arm. So need other check ...
 !android_app {
 #    message ("not android")
